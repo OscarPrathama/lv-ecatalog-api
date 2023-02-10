@@ -1,11 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
-class APIUserController extends Controller
+class UserController extends Controller
 {
+
+    use ResponseTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +19,17 @@ class APIUserController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            
+            $users = User::all();
+
+            return $this->responseSuccess($users, 'Users fetched successfully');
+
+        } catch (\Throwable $th) {
+            
+            return $this->responseError([], $th->getMessage(), $th->getCode() );
+
+        }
     }
 
     /**
