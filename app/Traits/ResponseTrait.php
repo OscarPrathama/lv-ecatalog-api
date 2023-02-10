@@ -11,34 +11,32 @@ trait ResponseTrait
     /**
      * Success response
      *
-     * @param  mixed $data
-     * @param  string $message
+     * @param mixed $data
+     * @param int $code
      * @return JsonResponse
      */
-    public function responseSuccess($data, string $message = 'Successful'): JsonResponse{
+    public function responseSuccess($data, int $code = Response::HTTP_OK): JsonResponse{
         return response()->json([
+            'code'      => $code,
             'status'    => true,
-            'message'   => $message,
-            'data'      => $data,
-            'errors'    => null
-        ], Response::HTTP_OK);
+            'data'      => $data
+        ], $code);
     }
     
     /**
      * Error response
      *
-     * @param  mixed $errors
-     * @param  string $message
-     * @param  int $responseCode
+     * @param string $message
+     * @param int $code
      * @return JsonResponse
      */
-    public function responseError($errors, string $message = 'Something going wrong!.', int $responseCode = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse{
+    public function responseError(string $message = 'Something going wrong!.', $errors = [],int $code = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse{
         return response()->json([
+            'code'      => $code,
             'status'    => false,
             'message'   => $message,
-            'data'      => null,
-            'errors'    => $errors
-        ], $responseCode);
+            'errors'    => $errors 
+        ], $code);
     }
 
 }
