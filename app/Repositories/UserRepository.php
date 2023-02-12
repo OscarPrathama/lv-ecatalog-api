@@ -27,7 +27,6 @@ class UserRepository implements CrudInterface
         return $query->paginate($filter['perPage']);
     }
 
-
     public function create(array $data): ?User {
         return User::create($data);
     }
