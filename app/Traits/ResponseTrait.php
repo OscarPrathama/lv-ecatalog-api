@@ -15,8 +15,11 @@ trait ResponseTrait
      * @param int $code
      * @return JsonResponse
      */
-    public function responseSuccess($data, int $code = Response::HTTP_OK): JsonResponse{
+    public function responseSuccess(string $message, $data, int $code = Response::HTTP_OK): JsonResponse{
+        $message = !empty($message) ? $message : 'success' ;
+        
         return response()->json([
+            'message'   => $message,
             'code'      => $code,
             'status'    => true,
             'data'      => $data

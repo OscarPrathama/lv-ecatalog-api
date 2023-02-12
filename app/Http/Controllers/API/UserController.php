@@ -4,9 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Traits\ResponseTrait;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -30,7 +32,7 @@ class UserController extends Controller
     {
         try {
             $users = $this->userRepository->getAll(request()->all());
-            return $this->responseSuccess($users);
+            return $this->responseSuccess('', $users);
         } catch (Exception $e) {
             return $this->responseError($e->getMessage());
         }
@@ -54,7 +56,7 @@ class UserController extends Controller
             ];
 
             $user = $this->userRepository->create($data);
-            return $this->responseSuccess($user, Response::HTTP_CREATED);
+            return $this->responseSuccess('', $user, Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->responseError($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -63,24 +65,42 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param integer $id
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show(int $id): JsonResponse
     {
-        //
+        try {
+            return $this->responseSuccess('', $this->userRepository->getById($id));
+        } catch (Exception $e) {
+            return $this->responseError($e->getMessage(), 'User doesn\'t exist.',Response::HTTP_NOT_FOUND);
+        }
     }
 
     /**
      * Update the specified resource in storage.
+     * belum, cek jga klo ganti pass, cek login kembali
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
-        //
+        try {
+
+            $data = [
+                'name'      => $request->name,
+                'email'     => $request->email,
+                'password'  => Hash::make($request->password),
+                'phone'     => $request->phone,
+                'city'      => $request->city
+            ];
+
+            return $this->responseSuccess('', $this->userRepository->update($id, $data));
+        } catch (Exception $e) {
+            return $this->responseError($e->getMessage(), null,Response::HTTP_NOT_FOUND);
+        }
     }
 
     /**
@@ -91,6 +111,10 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            return $this->responseSuccess('User deleted successfully', $this->userRepository->delete($id));
+        } catch (Exception $e) {
+            return $this->responseError($e->getMessage(), null,Response::HTTP_NOT_FOUND);
+        }
     }
 }

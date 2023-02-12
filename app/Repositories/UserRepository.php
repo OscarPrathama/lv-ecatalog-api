@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\Interfaces\CrudInterface;
 use App\Models\User;
+use Exception;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Http\Response;
 
 class UserRepository implements CrudInterface
 {
@@ -30,9 +32,27 @@ class UserRepository implements CrudInterface
         return User::create($data);
     }
 
-    public function prepareForDB(array $data, ?User $user = null): array
-    {
-        return [];
+    public function getById(int $id): ?User {
+        return User::findOrFail($id);
+    }
+
+    public function update(int $id, array $data): ?User {
+        $user = $this->getById($id);
+
+        $updated = $user->update($data);
+        
+        if($updated){
+            $user = $this->getById($id);
+        }
+
+        return $user;
+    }
+
+    public function delete(int $id): ?User{
+        $user = $this->getById($id);
+        $user->delete();
+
+        return $user;
     }
 
 }
