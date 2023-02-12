@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -72,6 +73,22 @@ class UserController extends Controller
     {
         try {
             return $this->responseSuccess('', $this->userRepository->getById($id));
+        } catch (Exception $e) {
+            return $this->responseError($e->getMessage(), 'User doesn\'t exist.',Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Display current login user
+     *
+     * @return JsonResponse
+     */
+    public function myProfile(): JsonResponse
+    {
+        try {
+
+
+            return $this->responseSuccess('Get authenticated user success', Auth::guard()->user());
         } catch (Exception $e) {
             return $this->responseError($e->getMessage(), 'User doesn\'t exist.',Response::HTTP_NOT_FOUND);
         }

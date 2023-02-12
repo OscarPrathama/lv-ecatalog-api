@@ -20,7 +20,9 @@ Route::post('login', [LoginController::class, 'login']);
 Route::post('register', [RegisterController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::resource('users', UserController::class);    
+    Route::get('users/profile', [UserController::class, 'myProfile']);
+    Route::resource('users', UserController::class);
+    // Route::get('profile', [ProfileController::class, 'show']);
 
     Route::post('logout', [LoginController::class, 'logout']);
 });
