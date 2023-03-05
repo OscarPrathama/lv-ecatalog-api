@@ -31,6 +31,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create dummy user data
-        User::factory(1000)->create();
+        User::factory(10)->create();
+
+        $this->call([
+            PostSeeder::class
+        ]);
     }
 }

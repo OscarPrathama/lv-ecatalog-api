@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest;
 use App\Http\Requests\UserRequest;
-use App\Models\User;
-use App\Repositories\UserRepository;
+use App\Repositories\PostRepository;
 use App\Traits\ResponseTrait;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -14,14 +14,14 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class PostController extends Controller
 {
 
     use ResponseTrait;
 
-    public function __construct(private UserRepository $userRepository)
+    public function __construct(private PostRepository $postRepository)
     {
-        $this->userRepository = $userRepository;
+        $this->postRepository = $postRepository;
     }
 
     /**
@@ -32,8 +32,8 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $users = $this->userRepository->getAll(request()->all());
-            return $this->responseSuccess('', $users);
+            $posts = $this->postRepository->getAll(request()->all());
+            return $this->responseSuccess('', $posts);
         } catch (Exception $e) {
             return $this->responseError($e->getMessage());
         }
@@ -45,19 +45,24 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(PostRequest $request)
     {
+
         try {
+
             $data = [
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'password'  => Hash::make($request->password),
-                'phone'     => $request->phone,
-                'city'      => $request->city
+                'post_author'   => Auth::user()->id,
+                'post_title'    => $request->post_title,
+                'post_slug'     => $request->post_slug,
+                'post_type'     => $request->post_type,
+                'excerpt'       => $request->excerpt,
+                'post_content'  => $request->post_content,
+                'post_status'   => $request->post_status,
+                'comment_count' => $request->comment_count
             ];
 
-            $user = $this->userRepository->create($data);
-            return $this->responseSuccess('', $user, Response::HTTP_CREATED);
+            $post = $this->postRepository->create($data);
+            return $this->responseSuccess('', $post, Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->responseError($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -72,18 +77,19 @@ class UserController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            return $this->responseSuccess('', $this->userRepository->getById($id));
+            return $this->responseSuccess('', $this->postRepository->getById($id));
         } catch (Exception $e) {
-            return $this->responseError($e->getMessage(), 'User doesn\'t exist.',Response::HTTP_NOT_FOUND);
+            return $this->responseError($e->getMessage(), 'Post doesn\'t exist.',Response::HTTP_NOT_FOUND);
         }
     }
 
     /**
-     * Display current login user
-     *
+     * Display full post detail include (comment, users, others)
+     * belum
+     * 
      * @return JsonResponse
      */
-    public function myProfile(): JsonResponse
+    public function showFullDetailPost(): JsonResponse
     {
         try {
             return $this->responseSuccess('Get authenticated user success', Auth::guard()->user());
@@ -94,26 +100,29 @@ class UserController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * belum, .git error
      * belum, cek jga klo ganti pass, cek login kembali
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserRequest $request, $id)
+    public function update(PostRequest $request, $id)
     {
 
         try {
 
             $data = [
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'password'  => Hash::make($request->password),
-                'phone'     => $request->phone,
-                'city'      => $request->city
+                'post_title'    => $request->post_title,
+                'post_slug'     => $request->post_slug,
+                'post_type'     => $request->post_type,
+                'excerpt'       => $request->excerpt,
+                'post_content'  => $request->post_content,
+                'post_status'   => $request->post_status,
+                'post_image'    => $request->file('post_image')
             ];
 
-            return $this->responseSuccess('', $this->userRepository->update($id, $data));
+            return $this->responseSuccess('', $this->postRepository->update($id, $data));
         } catch (Exception $e) {
             return $this->responseError($e->getMessage(), null,Response::HTTP_NOT_FOUND);
         }
@@ -128,7 +137,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         try {
-            return $this->responseSuccess('User deleted successfully', $this->userRepository->delete($id));
+            return $this->responseSuccess('Post deleted successfully', $this->postRepository->delete($id));
         } catch (Exception $e) {
             return $this->responseError($e->getMessage(), null,Response::HTTP_NOT_FOUND);
         }
