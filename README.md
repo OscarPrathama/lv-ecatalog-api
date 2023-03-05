@@ -1,12 +1,42 @@
 # Laravel E Catalog (Semi Ecommerce)
 - Model
-  - User, Product, Product Category
+  - User
+  - Post
+  - PostMeta
+    - id
+    - post_id
+      - _attached_file
+      - _attachment_metadata
+      - _attachment_image_alt
+    - meta_key
+    - meta_value
+  - Post Category
+  - Post Tag
+  - Comment
+  - Product
+  - Product Category
+  - Product Tag
 # Feature
-- JWT, Laravel Passport
+- JWT, Laravel Passport                 -> done
 - Email (Event Listener)
-- Request
+- Request                               -> done
 - Backup
 - Optimize cache (view, route, config)
-- Lazy/Eager load
+- Lazy/Eager load data
 - Upload image
+- Lazyload image
 - Laravel Telescope
+- ORM
+- Logging
+- Export CSV, Excel, PDF
+- Open Graph SEO
+- Custom Field
+- Pages
+- Posts
+- Products
+- Model casting -> https://laravel.com/docs/9.x/eloquent-mutators#attribute-casting
+
+# Optional Features
+- Cronjob
+- Job & Queues
+- Broadcasting
